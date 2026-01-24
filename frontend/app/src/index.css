@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "urbanist", "sans-serif";
+  --breakponit-3xl: 1920px;
+  --color-primary: #FF9324
+}
+@layer base {
+ html {
+  font-family: var;
+ } 
+body
+{
+  background-color: white;
+}
+
+}
+
+
