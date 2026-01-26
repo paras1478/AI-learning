@@ -5,7 +5,9 @@ import {
   generateSummary,
   chatWithContext,
   explainConcept,
+  getChatHistory,          
 } from "../controllers/aicontroller.js";
+
 import protect from "../middleware/auth.js";
 
 const router = express.Router();
@@ -36,23 +38,16 @@ router.post("/generate-quiz", protect, async (req, res) => {
 });
 
 /* Summary */
-router.post("/generate-summary", protect, async (req, res) => {
-  try {
-    const { text } = req.body;
-    if (!text) {
-      return res.status(400).json({ success: false, message: "text is required" });
-    }
-    const summary = await generateSummary(text);
-    res.json({ success: true, summary });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
+router.post("/generate-summary", protect, generateSummary);
 
-/* ✅ CHAT — controller handles req,res */
+
+/*  CHAT */
 router.post("/chat", protect, chatWithContext);
 
-/* ✅ EXPLAIN — controller handles req,res */
+/*  CHAT HISTORY (THIS WAS MISSING) */
+router.get("/chat-history/:documentId", protect, getChatHistory);
+
+/* EXPLAIN */
 router.post("/explain-concept", protect, explainConcept);
 
 export default router;

@@ -1,27 +1,16 @@
 import mongoose from "mongoose";
-import fs from "fs/promises";
-
 import Document from "../models/Document.js";
 import Flashcard from "../models/Flashcard.js";
 import Quiz from "../models/Quiz.js";
 
-// ✅ FIXED: named import
 import { extractPdfText } from "../utils/extractpdfText.js";
-
 import { chunkText } from "../utils/textChunker.js";
 
-/**
- * UPLOAD DOCUMENT
- */
 export const uploadDocument = async (req, res) => {
   try {
     const file = req.file;
+    if (!file) return res.status(400).json({ message: "No file uploaded" });
 
-    if (!file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    // ✅ Create document (processing state)
     const document = await Document.create({
       userId: req.user._id,
       title: req.body.title || file.originalname.replace(".pdf", ""),
@@ -32,10 +21,8 @@ export const uploadDocument = async (req, res) => {
       status: "processing",
     });
 
-    // ✅ Extract text from PDF
     const extractedText = await extractPdfText(file.path);
 
-    // ✅ Chunk extracted text
     const chunks = chunkText(extractedText).map((content, index) => ({
       content,
       chunkIndex: index,
@@ -47,20 +34,13 @@ export const uploadDocument = async (req, res) => {
 
     await document.save();
 
-    res.status(201).json({
-      success: true,
-      document,
-      message: "Document uploaded and processed",
-    });
+    res.status(201).json(document);
   } catch (err) {
     console.error("Upload Error:", err);
     res.status(500).json({ message: "Upload failed" });
   }
 };
 
-/**
- * GET ALL DOCUMENTS
- */
 export const getDocuments = async (req, res, next) => {
   try {
     const documents = await Document.find({ userId: req.user._id })
@@ -73,9 +53,6 @@ export const getDocuments = async (req, res, next) => {
   }
 };
 
-/**
- * GET SINGLE DOCUMENT
- */
 export const getDocument = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -99,9 +76,6 @@ export const getDocument = async (req, res, next) => {
   }
 };
 
-/**
- * UPDATE DOCUMENT
- */
 export const updateDocument = async (req, res, next) => {
   try {
     const document = await Document.findOneAndUpdate(
@@ -110,9 +84,7 @@ export const updateDocument = async (req, res, next) => {
       { new: true }
     );
 
-    if (!document) {
-      return res.status(404).json({ error: "Document not found" });
-    }
+    if (!document) return res.status(404).json({ error: "Document not found" });
 
     res.json(document);
   } catch (error) {
@@ -120,9 +92,6 @@ export const updateDocument = async (req, res, next) => {
   }
 };
 
-/**
- * DELETE DOCUMENT
- */
 export const deleteDocument = async (req, res, next) => {
   try {
     const document = await Document.findOne({
@@ -130,9 +99,7 @@ export const deleteDocument = async (req, res, next) => {
       userId: req.user._id,
     });
 
-    if (!document) {
-      return res.status(404).json({ error: "Document not found" });
-    }
+    if (!document) return res.status(404).json({ error: "Document not found" });
 
     await Flashcard.deleteMany({ documentId: document._id });
     await Quiz.deleteMany({ documentId: document._id });

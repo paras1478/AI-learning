@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
-import Document from "../models/Document.js"; // ✅ REQUIRED
+import Document from "../models/Document.js"; 
+import ChatHistory from "../models/ChatHistory.js";
 
 dotenv.config();
 
 if (!process.env.GEMINI_API_KEY) {
-  console.error("❌ FATAL ERROR: GEMINI_API_KEY not found");
+  console.error(" FATAL ERROR: GEMINI_API_KEY not found");
   process.exit(1);
 }
 
@@ -127,26 +128,20 @@ ${text.substring(0, 12000)}
 };
 
 /* ================= SUMMARY ================= */
-export const generateSummary = async (text) => {
-  try {
-    if (typeof text !== "string" || text.trim().length < 10) {
-      throw new Error("Text is too short to summarize");
-    }
 
-    const result = await ai.models.generateContent({
-      model: MODEL,
-      contents: `Summarize the following content clearly:\n\n${text.substring(0, 15000)}`,
-    });
+export const generateSummary = async (req, res) => {
+  const { documentId } = req.body;
+  const doc = await Document.findById(documentId);
 
-    if (!result.text) throw new Error("Gemini returned empty summary");
+  const result = await ai.models.generateContent({
+    model: MODEL,
+    contents: `Summarize:\n${doc.extractedText}`
+  });
 
-    return result.text;
-
-  } catch (err) {
-    console.error("Gemini Summary Error:", err);
-    throw new Error("Summary generation failed");
-  }
+  res.json({ summary: result.text });
 };
+
+
 
 /* ================= EXPLAIN ================= */
 export const explainConcept = async (req, res) => {
@@ -197,7 +192,7 @@ Explain simply with examples:
 /* ================= CHAT ================= */
 export const chatWithContext = async (req, res) => {
   try {
-    const { documentId, question } = req.body || {};
+    const { documentId, question } = req.body;
 
     if (!documentId || !question) {
       return res.status(400).json({
@@ -206,9 +201,9 @@ export const chatWithContext = async (req, res) => {
       });
     }
 
-    const doc = await Document.findById(documentId);
+    const document = await Document.findById(documentId);
 
-    if (!doc || !doc.extractedText) {
+    if (!document || !document.extractedText) {
       return res.status(404).json({
         success: false,
         error: "Document not found or empty",
@@ -219,24 +214,65 @@ export const chatWithContext = async (req, res) => {
 Answer ONLY using the document below.
 
 Document:
-${doc.extractedText.substring(0, 12000)}
+${document.extractedText.substring(0, 12000)}
 
 Question:
 ${question}
 `;
 
     const result = await ai.models.generateContent({
-      model: MODEL,
+      model: "gemini-2.5-flash-lite",
       contents: prompt,
+    });
+
+    const answer = result.text || "No response from AI";
+
+    // ✅ Save USER message
+    await ChatHistory.create({
+      documentId,
+      role: "user",
+      content: question,
+    });
+
+    // ✅ Save ASSISTANT message
+    await ChatHistory.create({
+      documentId,
+      role: "assistant",
+      content: answer,
     });
 
     res.json({
       success: true,
-      answer: result.text,
+      answer,
     });
-
   } catch (error) {
     console.error("CHAT ERROR:", error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({
+      success: false,
+      error: "Chat failed",
+    });
   }
 };
+
+/* ================= CHAT HISTORY ================= */
+export const getChatHistory = async (req, res) => {
+  try {
+    const { documentId } = req.params;
+
+    if (!documentId) {
+      return res.status(400).json({ message: "documentId is required" });
+    }
+
+    const history = await ChatHistory
+      .find({ documentId })
+      .sort({ createdAt: 1 });
+
+    res.json(history);
+  } catch (error) {
+    console.error("CHAT HISTORY ERROR:", error);
+    res.status(500).json({
+      message: "Failed to fetch chat history",
+    });
+  }
+};
+

@@ -1,7 +1,5 @@
 import express from "express";
 import multer from "multer";
-import path from "path";
-import Document from "../models/Document.js";
 
 import {
   uploadDocument,
@@ -31,24 +29,7 @@ router.put("/:id", protect, updateDocument);
 // Delete document
 router.delete("/:id", protect, deleteDocument);
 
-// ✅ DOWNLOAD DOCUMENT (force download)
-router.get("/download/:id", protect, async (req, res) => {
-  try {
-    const document = await Document.findById(req.params.id);
-
-    if (!document) {
-      return res.status(404).json({ message: "Document not found" });
-    }
-
-    const filePath = path.join(process.cwd(), document.filePath);
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment"); // force download
-    res.sendFile(filePath);
-  } catch (error) {
-    console.error("Download error:", error);
-    res.status(500).json({ message: "Download failed" });
-  }
-});
+// REMOVED download route that forced attachment
+// router.get("/download/:id", ...)
 
 export default router;
