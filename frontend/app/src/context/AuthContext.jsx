@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // 🔹 Check auth on app load
+  //  Check auth on app load
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Login
+  //  Login
   const login = (userData, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true);
   };
 
-  // 🔹 Logout
+  //  Logout
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
     window.location.href = "/";
   };
 
-  // 🔹 Update user profile locally
+  //  Update user profile locally
   const updateUser = (updatedUserData) => {
     const newUserData = { ...user, ...updatedUserData };
     localStorage.setItem("user", JSON.stringify(newUserData));

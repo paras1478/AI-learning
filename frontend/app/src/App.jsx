@@ -21,8 +21,7 @@ import ProfilePage from "./pages/Profile/ProfilePage";
 import AppLayout from "./components/layout/AppLayout";
 import { useAuth } from "./context/AuthContext";
 
-// frontend test update
-
+// Protected Route
 const ProtectedRoute = ({ isAuthenticated }) => {
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
@@ -41,37 +40,40 @@ const App = () => {
   return (
     <Router>
       <Routes>
-
-        
+        {/* Root redirect */}
         <Route
           path="/"
           element={
-            isAuthenticated
-              ? <Navigate to="/dashboard" replace />
-              : <Navigate to="/login" replace />
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
-        
+        {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        
+        {/* Protected routes with layout */}
         <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
           <Route element={<AppLayout />}>
-
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/documents" element={<DocumentListPage />} />
             <Route path="/documents/:id" element={<DocumentDetailPage />} />
             <Route path="/flashcards" element={<FlashCardListPage />} />
             <Route path="/document/:id/flashcard" element={<FlashCardPage />} />
             <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
-            <Route path="/quizzes/:quizId/result" element={<QuizResultPage />} />
+            <Route
+              path="/quizzes/:quizId/result"
+              element={<QuizResultPage />}
+            />
             <Route path="/profile" element={<ProfilePage />} />
-
           </Route>
         </Route>
 
+        {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
