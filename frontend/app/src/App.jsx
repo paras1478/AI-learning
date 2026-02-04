@@ -21,7 +21,8 @@ import ProfilePage from "./pages/Profile/ProfilePage";
 import AppLayout from "./components/layout/AppLayout";
 import { useAuth } from "./context/AuthContext";
 
-// Protected Route
+// frontend test update
+
 const ProtectedRoute = ({ isAuthenticated }) => {
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
@@ -41,7 +42,7 @@ const App = () => {
     <Router>
       <Routes>
 
-        {/* Default redirect */}
+        
         <Route
           path="/"
           element={
@@ -51,11 +52,11 @@ const App = () => {
           }
         />
 
-        {/* Public routes */}
+        
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected + Layout */}
+        
         <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
           <Route element={<AppLayout />}>
 
