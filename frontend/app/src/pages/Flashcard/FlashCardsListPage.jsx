@@ -2,65 +2,69 @@ import React, { useState, useEffect, useCallback } from "react";
 import flashcardService from "../../services/flashcardService";
 import Spinner from "../../components/common/Spinner";
 import EmptyState from "../../components/common/EmptyState";
-import FlashcardSetCard from "../../components/Flashcards/FlashcardSetCard";
 import toast from "react-hot-toast";
+import Flashcard from "../../components/Flashcards/Flashcard";
 
 const FlashcardsListPage = () => {
-  const [flashcardSets, setFlashcardSets] = useState([]);
+  const [flashcards, setFlashcards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchFlashcardSets = useCallback(async () => {
+  /* ================= FETCH ================= */
+  const fetchFlashcards = useCallback(async () => {
     try {
-      const response = await flashcardService.getAllFlashcardSets();
-      setFlashcardSets(Array.isArray(response?.data) ? response.data : []);
+      setLoading(true);
+      const data = await flashcardService.getAllFlashcards();
+      setFlashcards(Array.isArray(data) ? data : []);
     } catch (error) {
-      toast.error("Failed to fetch flashcard sets");
+      console.error(error);
+      toast.error("Failed to fetch flashcards");
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchFlashcardSets();
-  }, [fetchFlashcardSets]);
+    fetchFlashcards();
+  }, [fetchFlashcards]);
 
-  const handleDelete = async (id) => {
-    try {
-      await flashcardService.deleteFlashcardSet(id);
-
-      setFlashcardSets((prev) =>
-        prev.filter((set) => set._id !== id)
-      );
-
-      toast.success("Flashcard set deleted successfully");
-    } catch (error) {
-      toast.error("Delete failed");
-    }
+  const handleToggleStar = async (id) => {
+    // optional API call
+    setFlashcards((prev) =>
+      prev.map((card) =>
+        card._id === id
+          ? { ...card, isStarred: !card.isStarred }
+          : card
+      )
+    );
   };
 
-  if (loading) return <Spinner />;
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold">My Flashcards</h2>
-        <p className="text-gray-600">Review and manage your flashcard sets</p>
-      </div>
+      <h2 className="text-2xl font-bold mb-1">My Flashcards</h2>
+      <p className="text-gray-600 mb-6">
+        Review and practice your flashcards
+      </p>
 
-      {/* Content */}
-      {flashcardSets.length === 0 ? (
+      {flashcards.length === 0 ? (
         <EmptyState
-          title="No Flashcard Sets Found"
+          title="No Flashcards Found"
           description="You haven't created any flashcards yet."
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
-          {flashcardSets.map((set) => (
-            <FlashcardSetCard
-              key={set._id}
-              flashcardSet={set}
-              onDelete={handleDelete}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {flashcards.map((card) => (
+            <Flashcard
+              key={card._id}
+              flashcard={card}
+              onToggleStar={handleToggleStar}
             />
           ))}
         </div>

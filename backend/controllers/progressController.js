@@ -2,16 +2,12 @@ import Document from "../models/Document.js";
 import Flashcard from "../models/Flashcard.js";
 import Quiz from "../models/Quiz.js";
 
-// @desc    Get user learning statistics
-// @route   GET /api/progress/dashboard
-// @access  Private
+
 
 export const getDashboard = async (req, res, next) => {
   try {
-    //  user comes from auth middleware
     const userId = req.user._id;
 
-    /* ================= COUNTS ================= */
 
     const totalDocuments = await Document.countDocuments({ userId });
     const totalFlashcardSets = await Flashcard.countDocuments({ userId });
@@ -21,7 +17,6 @@ export const getDashboard = async (req, res, next) => {
       completedAt: { $ne: null },
     });
 
-    /* ================= FLASHCARD STATS ================= */
 
     const flashcardSets = await Flashcard.find({ userId });
 
@@ -39,7 +34,6 @@ export const getDashboard = async (req, res, next) => {
       ).length;
     });
 
-    /* ================= QUIZ STATS ================= */
 
     const quizzes = await Quiz.find({
       userId,
@@ -54,8 +48,8 @@ export const getDashboard = async (req, res, next) => {
           )
         : 0;
 
-    /* ================= RECENT ACTIVITY ================= */
 
+        
     const recentDocuments = await Document.find({ userId })
       .sort({ updatedAt: -1 })
       .limit(5)
@@ -67,11 +61,9 @@ export const getDashboard = async (req, res, next) => {
       .populate("documentId", "title")
       .select("score totalQuestions completedAt");
 
-    /* ================= STUDY STREAK (TEMP) ================= */
 
     const studyStreak = Math.floor(Math.random() * 7) + 1;
 
-    /* ================= RESPONSE ================= */
 
     res.status(200).json({
       success: true,

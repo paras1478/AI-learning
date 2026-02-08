@@ -2,10 +2,8 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 
-// absolute safe path
 const uploadDir = path.join(process.cwd(), "uploads", "documents");
 
-// auto-create folders
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

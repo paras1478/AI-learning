@@ -36,10 +36,9 @@ ${text.substring(0, 15000)}
 `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+    const result = await model.generateContent(prompt);
+const output = result.response.text();
+
 
     const generatedText = response.text;
 
@@ -84,79 +83,60 @@ ${text.substring(0, 15000)}
  * @returns {Promise<Array<{question: string, options: Array, correctAnswer: string, explaination: string, defficulty: string}>>}
  */
 export const generateQuiz = async (text, numQuestions = 5) => {
+  if (!text || text.trim().length < 30) {
+    return { error: "Document does not contain enough text" };
+  }
+
   const prompt = `
-Generate exactly ${numQuestions} multiple choice questions from the following text.
+Generate exactly ${numQuestions} multiple choice questions.
 
-Format each question as:
-Q: [Question]
-01: [Option 1]
-02: [Option 2]
-03: [Option 3]
-04: [Option 4]
-C: [Correct option – exactly as written above]
-E: [Brief explanation]
-D: [Difficulty: easy, medium, or hard]
+Format:
+Q: Question
+01: Option 1
+02: Option 2
+03: Option 3
+04: Option 4
+C: Correct option number (01-04)
+E: Short explanation
+D: easy | medium | hard
 
-Separate questions with "---"
-
+Separate questions with ---
 Text:
-${text.substring(0, 15000)}
+${text.substring(0, 12000)}
 `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+    const result = await model.generateContent(prompt);
+    const output = result.response.text();
 
-    const generatedText = response.text;
-    const questions = [];
-    const blocks = generatedText.split("---").filter(b => b.trim());
+    if (!output) return { error: "Empty AI response" };
 
-    for (const block of blocks) {
-      const lines = block.split("\n");
-      let question = "";
-      let options = [];
-      let correctAnswer = "";
-      let explanation = "";
-      let difficulty = "medium";
+    const questions = output
+      .split("---")
+      .map(q => q.trim())
+      .filter(Boolean)
+      .map(block => {
+        const question = block.match(/^Q:\s*(.*)/m)?.[1];
+        const options = [...block.matchAll(/^0[1-4]:\s*(.*)$/gm)].map(m => m[1]);
+        const correct = block.match(/^C:\s*(0[1-4])/m)?.[1];
 
-      for (const line of lines) {
-        const trimmed = line.trim();
+        if (!question || options.length !== 4 || !correct) return null;
 
-        if (trimmed.startsWith("Q:")) {
-          question = trimmed.substring(2).trim();
-        } else if (trimmed.match(/^0\d:/)) {
-          options.push(trimmed.substring(3).trim());
-        } else if (trimmed.startsWith("C:")) {
-          correctAnswer = trimmed.substring(2).trim();
-        } else if (trimmed.startsWith("E:")) {
-          explanation = trimmed.substring(2).trim();
-        } else if (trimmed.startsWith("D:")) {
-          const diff = trimmed.substring(2).trim().toLowerCase();
-          if (["easy", "medium", "hard"].includes(diff)) {
-            difficulty = diff;
-          }
-        }
-      }
-
-      if (question && options.length === 4 && correctAnswer) {
-        questions.push({
+        return {
           question,
           options,
-          correctAnswer,
-          explanation,
-          difficulty,
-        });
-      }
-    }
+          correctAnswer: options[Number(correct) - 1],
+        };
+      })
+      .filter(Boolean);
 
-    return questions.slice(0, numQuestions);
-  } catch (error) {
-    console.error("Gemini API error:", error);
-    throw new Error("Failed to generate quiz");
+    return { questions };
+  } catch (err) {
+    console.error("QUIZ GENERATOR ERROR:", err);
+    return { error: "Quiz generation failed" };
   }
 };
+
 
 /**
  * Generate document summary
@@ -173,10 +153,9 @@ ${text.substring(0, 20000)}
 `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+   const result = await model.generateContent(prompt);
+const summary  = result.response.text();
+
 
     return response.text;
   } catch (error) {
@@ -205,10 +184,9 @@ Answer:
 `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+   const result = await model.generateContent(prompt);
+const output = result.response.text();
+
 
     return response.text;
   } catch (error) {
@@ -234,10 +212,9 @@ ${context.substring(0, 10000)}
 `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+   const result = await model.generateContent(prompt);
+const output = result.response.text();
+
 
     return response.text;
   } catch (error) {

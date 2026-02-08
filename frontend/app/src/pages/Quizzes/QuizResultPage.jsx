@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import quizService from "../../services/quizService";
 import Spinner from "../../components/common/Spinner";
-import PageHeader from "../../components/common/PageHeader";
-import toast from "react-hot-toast";
 import {
   CheckCircle2,
   XCircle,
@@ -14,17 +12,17 @@ import {
 
 const QuizResultPage = () => {
   const { quizId } = useParams();
-  const [results, setResults] = useState(null);
+
+  const [resultsData, setResultsData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const data = await quizService.getQuizResults(quizId);
-        setResults(data); // already response.data
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to fetch quiz results");
+        const res = await quizService.getQuizResults(quizId);
+        setResultsData(res);
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -35,17 +33,15 @@ const QuizResultPage = () => {
 
   if (loading) return <Spinner />;
 
-  if (!results || !results.quiz || !results.results) {
-    return <div className="text-center mt-10">Quiz results not found</div>;
-  }
+  // ✅ SAFE GUARD (most important)
+  const detailedResults = Array.isArray(resultsData?.results)
+    ? resultsData.results
+    : [];
 
-  const quiz = results.quiz;
-  const detailedResults = results.results;
-
-  const score = quiz.score;
   const total = detailedResults.length;
   const correct = detailedResults.filter((r) => r.isCorrect).length;
   const incorrect = total - correct;
+  const score = resultsData?.quiz?.score ?? 0;
 
   const getScoreColor = (score) => {
     if (score >= 80) return "from-emerald-500 to-teal-500";
@@ -62,10 +58,10 @@ const QuizResultPage = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <PageHeader title={`${quiz.title || "Quiz"} - Results`} />
+    <div className="p-6 w-full">
+      <h2 className="text-3xl font-bold mb-4">Quiz-Result</h2>
 
-      {/* Score Card */}
+      {/* SCORE CARD */}
       <div className="bg-white rounded-2xl shadow border p-6 text-center mb-6">
         <div
           className={`mx-auto w-32 h-32 rounded-full bg-gradient-to-r ${getScoreColor(
@@ -95,48 +91,45 @@ const QuizResultPage = () => {
         </div>
       </div>
 
-      {/* Question Review */}
-     
-            {/* Question Review Section */}
-<div className="mt-8 space-y-4">
-  {detailedResults.map((item, index) => (
-    <div
-      key={index}
-      className={`p-4 border rounded-xl ${
-        item.isCorrect
-          ? "border-emerald-400 bg-emerald-50"
-          : "border-red-400 bg-red-50"
-      }`}
-    >
-      <h3 className="font-semibold mb-2">
-        Q{index + 1}. {item.question}
-      </h3>
+      {/* QUESTIONS */}
+      <div className="mt-8 space-y-4">
+        {detailedResults.map((item, index) => (
+          <div
+            key={index}
+            className={`p-4 border rounded-xl ${
+              item.isCorrect
+                ? "border-emerald-400 bg-emerald-50"
+                : "border-red-400 bg-red-50"
+            }`}
+          >
+            <h3 className="font-semibold mb-2">
+              Q{index + 1}. {item.question}
+            </h3>
 
-      <p className="flex items-center gap-2">
-        <strong>Your Answer:</strong>
-        <span
-          className={
-            item.isCorrect ? "text-emerald-700" : "text-red-700"
-          }
-        >
-          {item.selectedAnswer || "Not answered"}
-        </span>
-      </p>
+            <p className="flex items-center gap-2">
+              <strong>Your Answer:</strong>
+              <span
+                className={
+                  item.isCorrect ? "text-emerald-700" : "text-red-700"
+                }
+              >
+                {item.selectedAnswer || "Not answered"}
+              </span>
+            </p>
 
-      {!item.isCorrect && (
-        <p className="mt-1">
-          <strong>Correct Answer:</strong>{" "}
-          <span className="text-emerald-700">
-            {item.correctAnswer}
-          </span>
-        </p>
-      )}
-    </div>
-  ))}
-</div>
+            {!item.isCorrect && (
+              <p className="mt-1">
+                <strong>Correct Answer:</strong>{" "}
+                <span className="text-emerald-700">
+                  {item.correctAnswer}
+                </span>
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
 
-
-      {/* Actions */}
+      {/* ACTIONS */}
       <div className="flex justify-between mt-6">
         <Link
           to="/documents"

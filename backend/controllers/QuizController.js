@@ -37,6 +37,13 @@ export const createQuiz = async (req, res) => {
  */
 export const getQuizzes = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+
     const { documentId } = req.params;
 
     const quizzes = await Quiz.find({
@@ -58,13 +65,22 @@ export const getQuizzes = async (req, res) => {
   }
 };
 
+
 /**
  * @desc    Get single quiz by ID
  * @route   GET /api/quizzes/quiz/:id
  * @access  Private
  */
+
 export const getQuizById = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: user missing",
+      });
+    }
+
     const quiz = await Quiz.findOne({
       _id: req.params.id,
       userId: req.user._id,
@@ -77,18 +93,17 @@ export const getQuizById = async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      data: quiz,
-    });
+    res.json({ success: true, data: quiz });
   } catch (error) {
-    console.error("Get Quiz By ID Error:", error);
+    console.error("getQuizById error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 
 /**
  * @desc    Submit quiz answers
@@ -97,34 +112,62 @@ export const getQuizById = async (req, res) => {
  */
 export const submitQuiz = async (req, res) => {
   try {
-    const { answers } = req.body; // array of answers
+    const { answers } = req.body;
+
+    // ✅ answers must be an ARRAY
+    if (!Array.isArray(answers)) {
+      return res.status(400).json({
+        success: false,
+        message: "Answers must be an array",
+      });
+    }
+
     const quiz = await Quiz.findOne({
       _id: req.params.id,
       userId: req.user._id,
     });
 
-    if (!quiz) {
-      return res.status(404).json({
+    if (!quiz || !Array.isArray(quiz.questions) || quiz.questions.length === 0) {
+      return res.status(400).json({
         success: false,
-        message: "Quiz not found",
+        message: "Quiz not found or has no questions",
       });
     }
 
-    let score = 0;
+    let correctCount = 0;
 
-    quiz.questions.forEach((q, index) => {
-      if (answers?.[index] === q.correctAnswer) {
-        score += 1;
-      }
+    // ✅ INDEX-BASED MATCH (frontend compatible)
+    const results = quiz.questions.map((q, index) => {
+      const selectedAnswer = answers[index] ?? null;
+      const isCorrect = selectedAnswer === q.correctAnswer;
+
+      if (isCorrect) correctCount++;
+
+      return {
+        question: q.question,
+        selectedAnswer,
+        correctAnswer: q.correctAnswer,
+        isCorrect,
+      };
     });
 
+    const total = results.length;
+    const score =
+      total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+    // ✅ SAVE EVERYTHING
     quiz.score = score;
+    quiz.results = results;
+    quiz.isSubmitted = true;
+
     await quiz.save();
 
     res.json({
       success: true,
-      score,
-      total: quiz.questions.length,
+      quiz: {
+        score: quiz.score,
+      },
+      results,
     });
   } catch (error) {
     console.error("Submit Quiz Error:", error);
@@ -134,6 +177,13 @@ export const submitQuiz = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
 
 /**
  * @desc    Get quiz results
@@ -156,18 +206,23 @@ export const getQuizResults = async (req, res) => {
 
     res.json({
       success: true,
-      score: quiz.score,
-      total: quiz.questions.length,
-      questions: quiz.questions,
+      quiz: {
+        _id: quiz._id,
+        score: quiz.score,
+      },
+      results: quiz.results,
     });
   } catch (error) {
-    console.error("Get Quiz Results Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
+ 
+
 
 /**
  * @desc    Delete a quiz

@@ -1,29 +1,37 @@
-import React from "react";
-import { Trash2, Play } from "lucide-react";
-import Button from "../common/Button";
+import { Play, Trash2 } from "lucide-react";
+import moment from "moment";
 
-const QuizCard = ({ quiz, onDelete, onPlay }) => {
+const QuizCard = ({ quiz, onPlay, onDelete }) => {
   return (
-    <div className="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-      <div>
-        <h3 className="font-semibold text-lg mb-2">{quiz.title}</h3>
-        <p className="text-gray-500 text-sm">
-          {quiz.questions?.length || 0} Questions
-        </p>
-      </div>
+    <div className="group relative border rounded-2xl p-5 hover:shadow transition">
+      <button
+        onClick={onDelete}
+        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100
+          text-red-500 hover:text-red-600 transition"
+      >
+        <Trash2 size={18} />
+      </button>
 
-      <div className="flex justify-between items-center mt-4">
-        <Button onClick={() => onPlay(quiz._id)}>
-          <Play size={16} />
-        </Button>
+      <h3 className="font-semibold mb-1">
+        {quiz.title || "Document Quiz"}
+      </h3>
 
-        <button
-          onClick={() => onDelete(quiz._id)}
-          className="text-red-500 hover:text-red-700"
-        >
-          <Trash2 />
-        </button>
-      </div>
+      <p className="text-xs text-slate-500 mb-3">
+        Created {moment(quiz.createdAt).format("MMM D, YYYY")}
+      </p>
+
+      <span className="inline-block text-xs bg-slate-100 px-3 py-1 rounded-full mb-4">
+        {quiz.questions?.length || 0} Questions
+      </span>
+
+      <button
+        onClick={() => onPlay(quiz._id)}
+        className="w-full mt-2 flex items-center justify-center gap-2
+          h-10 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600"
+      >
+        <Play size={16} />
+        Start Quiz
+      </button>
     </div>
   );
 };

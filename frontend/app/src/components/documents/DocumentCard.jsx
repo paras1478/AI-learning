@@ -19,7 +19,7 @@ const DocumentCard = ({ document, onDelete }) => {
       <button
         type="button"
         onClick={(e) => {
-          e.stopPropagation(); // 🔴 IMPORTANT
+          e.stopPropagation(); 
           onDelete();
         }}
         className="absolute top-4 right-4 opacity-0 group-hover:opacity-100

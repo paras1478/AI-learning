@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Trash2, ArrowLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import toast from "react-hot-toast";
 
 import flashcardService from "../../services/flashcardService";
@@ -15,21 +15,25 @@ const FlashcardPage = () => {
   const { id: documentId } = useParams();
   const navigate = useNavigate();
 
+  const [flashcardSet, setFlashcardSet] = useState(null);
   const [flashcards, setFlashcards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-
-
-  // ================= FETCH FLASHCARDS =================
+console.log("FlashcardPage mounted");
+  /* FETCH */
   const fetchFlashcards = async () => {
     setLoading(true);
     try {
-      const response = await flashcardService.getFlashcardsForDocument(documentId);
-      setFlashcards(response.data?.[0]?.cards || []);
-    } catch (error) {
+      const sets = await flashcardService.getFlashcardsForDocument(documentId);
+
+      if (sets.length > 0) {
+        setFlashcardSet(sets[0]);
+        setFlashcards(sets[0].cards || []);
+      } else {
+        setFlashcards([]);
+      }
+    } catch {
       toast.error("Failed to fetch flashcards");
     } finally {
       setLoading(false);
@@ -37,22 +41,70 @@ const FlashcardPage = () => {
   };
 
   useEffect(() => {
+      console.log("Document ID:", documentId);
+
     fetchFlashcards();
   }, [documentId]);
 
-  // ================= GENERATE FLASHCARDS =================
-  const handleGenerateFlashcards = async () => {
-    setGenerating(true);
+const handleGenerateFlashcards = async () => {
+  setGenerating(true);
+  try {
+    const newSet = await flashcardService.generateFlashcards(documentId);
+
+    console.log("FLASHCARD SET 👉", newSet);
+
+    setFlashcardSets((prev) => [newSet, ...prev]);
+    setSelectedSet(newSet); 
+    setCurrentCardIndex(0);
+
+    toast.success("Flashcards generated");
+  } catch (err) {
+    toast.error("Unable to generate flashcards");
+    console.error(err);
+  } finally {
+    setGenerating(false);
+  }
+};
+
+
+
+  const handleNext = () =>
+    setCurrentCardIndex((i) => (i + 1) % flashcards.length);
+
+  const handlePrev = () =>
+    setCurrentCardIndex((i) => (i - 1 + flashcards.length) % flashcards.length);
+
+  /* STAR */
+  const handleToggleStar = async (cardId) => {
     try {
-      await aiService.generateFlashcards(documentId);
-      toast.success("Flashcards generated!");
-      fetchFlashcards();
-    } catch (error) {
-      toast.error("Failed to generate flashcards");
-    } finally {
-      setGenerating(false);
+      await flashcardService.toggleStar(cardId);
+      setFlashcards((prev) =>
+        prev.map((c) =>
+          c._id === cardId ? { ...c, isStarred: !c.isStarred } : c
+        )
+      );
+    } catch {
+      toast.error("Failed to update star");
     }
   };
+
+  if (loading) return <Spinner />;
+
+  if (!flashcards.length) {
+    return (
+      <EmptyState
+        title="No Flashcards Yet"
+        description="Generate flashcards from this document."
+        actionLabel="Generate Flashcards"
+        onAction={handleGenerateFlashcards}
+        loading={generating}
+      />
+    );
+  }
+
+  const currentCard = flashcards[currentCardIndex];
+
+
 
   // ================= BACK =================
   const handleBackToDocument = () => {
@@ -82,21 +134,7 @@ const FlashcardPage = () => {
     );
   };
 
-  // ================= STAR TOGGLE =================
-  const handleToggleStar = async (cardId) => {
-    try {
-      await flashcardService.toggleStar(cardId);
-      setFlashcards((prev) =>
-        prev.map((card) =>
-          card._id === cardId
-            ? { ...card, isStarred: !card.isStarred }
-            : card
-        )
-      );
-    } catch (error) {
-      toast.error("Failed to update star");
-    }
-  };
+
 
   // ================= CONTENT =================
   const renderFlashcardContent = () => {

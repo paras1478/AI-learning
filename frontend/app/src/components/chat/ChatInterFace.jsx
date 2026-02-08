@@ -20,13 +20,13 @@ const ChatInterface = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  /* ===== Fetch Chat History ===== */
+  /* ================= FETCH CHAT HISTORY ================= */
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
         setInitialLoading(true);
-        const history = await aiService.getChatHistory(documentId);
-        setHistory(history || []);
+        const data = await aiService.getChatHistory(documentId);
+        setHistory(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch chat history:", error);
       } finally {
@@ -41,14 +41,18 @@ const ChatInterface = () => {
     scrollToBottom();
   }, [history]);
 
-  /* ===== Send Message ===== */
+  /* ================= SEND MESSAGE ================= */
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || loading) return;
 
+    const userText = message.trim();
+
+    // Optimistic UI (user message)
     const userMessage = {
+      _id: `local-user-${Date.now()}`,
       role: "user",
-      content: message,
+      content: userText,
       timestamp: new Date(),
     };
 
@@ -57,37 +61,47 @@ const ChatInterface = () => {
     setLoading(true);
 
     try {
-      const response = await aiService.chat(documentId, userMessage.content);
+      const response = await aiService.chat(documentId, userText);
+
+      const aiText =
+        typeof response?.answer === "string" && response.answer.trim().length > 0
+          ? response.answer
+          : "No response from AI";
 
       const assistantMessage = {
+        _id: `local-ai-${Date.now()}`,
         role: "assistant",
-        content: response.answer || "No response from AI",
+        content: aiText,
         timestamp: new Date(),
-        relevantChunks: response.relevantChunks || [],
       };
 
       setHistory((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Chat error:", error);
 
-      const errorMessage = {
-        role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
-        timestamp: new Date(),
-      };
-
-      setHistory((prev) => [...prev, errorMessage]);
+      setHistory((prev) => [
+        ...prev,
+        {
+          _id: `local-error-${Date.now()}`,
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
-  /* ===== Render Message ===== */
-  const renderMessage = (msg, index) => {
+  /* ================= RENDER MESSAGE ================= */
+  const renderMessage = (msg) => {
     const isUser = msg.role === "user";
 
     return (
-      <div key={index} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div
+        key={msg._id}
+        className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+      >
         <div
           className={`max-w-[75%] p-3 rounded-2xl shadow text-sm ${
             isUser
@@ -96,7 +110,7 @@ const ChatInterface = () => {
           }`}
         >
           {msg.role === "assistant" ? (
-            <MarkdownRenderer content={msg.content} />
+            <MarkdownRenderer content={msg.content || "No response from AI"} />
           ) : (
             <p>{msg.content}</p>
           )}
@@ -105,7 +119,7 @@ const ChatInterface = () => {
     );
   };
 
-  /* ===== Initial Loading UI ===== */
+  /* ================= INITIAL LOADING ================= */
   if (initialLoading) {
     return (
       <div className="flex flex-col h-[70vh] bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl items-center justify-center shadow-xl">
@@ -116,6 +130,7 @@ const ChatInterface = () => {
     );
   }
 
+  /* ================= UI ================= */
   return (
     <div className="flex flex-col h-[70vh] bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl">
       {/* Header */}
@@ -126,12 +141,15 @@ const ChatInterface = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {history.map((msg, index) => renderMessage(msg, index))}
+        {history.map(renderMessage)}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSendMessage} className="flex items-center gap-2 p-4 border-t">
+      <form
+        onSubmit={handleSendMessage}
+        className="flex items-center gap-2 p-4 border-t"
+      >
         <input
           type="text"
           placeholder="Ask something about this document..."

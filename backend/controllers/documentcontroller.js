@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import fs from "fs";
+import path from "path";
+
 import Document from "../models/Document.js";
 import Flashcard from "../models/Flashcard.js";
 import Quiz from "../models/Quiz.js";
@@ -9,34 +12,41 @@ import { chunkText } from "../utils/textChunker.js";
 export const uploadDocument = async (req, res) => {
   try {
     const file = req.file;
-    if (!file) return res.status(400).json({ message: "No file uploaded" });
 
-    const document = await Document.create({
-      userId: req.user._id,
-      title: req.body.title || file.originalname.replace(".pdf", ""),
-      fileName: file.originalname,
-      filePath: `/uploads/documents/${file.filename}`,
-      fileSize: file.size,
-      extractedText: "",
-      status: "processing",
-    });
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+   
+    if (!file.mimetype.includes("pdf")) {
+      return res.status(400).json({ message: "Only PDF files are allowed" });
+    }
+
+  
+    if (!fs.existsSync(file.path)) {
+      return res.status(500).json({ message: "Uploaded file not found on server" });
+    }
 
     const extractedText = await extractPdfText(file.path);
-
     const chunks = chunkText(extractedText).map((content, index) => ({
       content,
       chunkIndex: index,
     }));
 
-    document.extractedText = extractedText;
-    document.chunks = chunks;
-    document.status = "ready";
-
-    await document.save();
+    const document = await Document.create({
+      userId: req.user._id,
+      title: req.body.title || file.originalname.replace(/\.pdf$/i, ""),
+      fileName: file.filename, 
+      filePath: `/uploads/documents/${file.filename}`, 
+      fileSize: file.size,
+      extractedText,
+      chunks,
+      status: "ready",
+    });
 
     res.status(201).json(document);
   } catch (err) {
-    console.error("Upload Error:", err);
+    console.error("UPLOAD ERROR:", err);
     res.status(500).json({ message: "Upload failed" });
   }
 };
@@ -58,7 +68,7 @@ export const getDocument = async (req, res, next) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Invalid ID" });
+      return res.status(400).json({ error: "Invalid document ID" });
     }
 
     const document = await Document.findOne({
@@ -84,7 +94,9 @@ export const updateDocument = async (req, res, next) => {
       { new: true }
     );
 
-    if (!document) return res.status(404).json({ error: "Document not found" });
+    if (!document) {
+      return res.status(404).json({ error: "Document not found" });
+    }
 
     res.json(document);
   } catch (error) {
@@ -99,10 +111,17 @@ export const deleteDocument = async (req, res, next) => {
       userId: req.user._id,
     });
 
-    if (!document) return res.status(404).json({ error: "Document not found" });
+    if (!document) {
+      return res.status(404).json({ error: "Document not found" });
+    }
 
     await Flashcard.deleteMany({ documentId: document._id });
     await Quiz.deleteMany({ documentId: document._id });
+
+    const absolutePath = path.join(process.cwd(), document.filePath);
+    if (fs.existsSync(absolutePath)) {
+      fs.unlinkSync(absolutePath);
+    }
 
     await document.deleteOne();
 

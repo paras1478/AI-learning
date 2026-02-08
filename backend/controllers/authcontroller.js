@@ -5,7 +5,6 @@ import { OAuth2Client } from "google-auth-library";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || "7d",
@@ -13,9 +12,7 @@ const generateToken = (id) => {
   
 };
 
-/* ===============================
-   GOOGLE SIGN-IN
-================================ */
+
 
 
 export const googleLogin = async (req, res) => {
@@ -55,10 +52,7 @@ export const googleLogin = async (req, res) => {
   }
 };
 
-   
-// ===============================
-// REGISTER
-// ===============================
+ 
 export const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -91,9 +85,7 @@ export const register = async (req, res, next) => {
   }
 };
 
-// ===============================
-// LOGIN
-// ===============================
+
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -121,9 +113,7 @@ export const login = async (req, res, next) => {
   }
 };
 
-// ===============================
-// GET PROFILE
-// ===============================
+
 export const getProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
@@ -137,9 +127,7 @@ export const getProfile = async (req, res, next) => {
   }
 };
 
-// ===============================
-// UPDATE PROFILE
-// ===============================
+
 export const updateProfile = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -157,9 +145,6 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
-// ===============================
-// CHANGE PASSWORD ✅ (IMPORTANT)
-// ===============================
 export const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;

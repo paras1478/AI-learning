@@ -4,6 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import AIActions from "../../components/Ai/AIAction";
 import FlashCardManager from "../../components/Flashcards/FlashcardManager";
+import QuizManager from "../../components/quizzes/QuizManager";
+
+
 import documentService from "../../services/documentService";
 import Spinner from "../../components/common/Spinner";
 import PageHeader from "../../components/common/PageHeader";
@@ -32,9 +35,8 @@ const DocumentDetailPage = () => {
   if (loading) return <Spinner />;
   if (!document) return <p>Document not found</p>;
 
-  const pdfUrl = `http://localhost:8000${document.filePath}`;
+const pdfUrl = `http://localhost:8000${document.filePath}`;
 
-  /* ===== Render Tabs ===== */
 
   const renderContent = () => (
     <iframe
@@ -57,7 +59,10 @@ const DocumentDetailPage = () => {
   const renderFlashcardsTab = () => {
     return <FlashCardManager documentId={id} />
   }
-  const renderQuizzesTab = () => <div>Quizzes coming soon...</div>;
+  const renderQuizzesTab = () => {
+      return <QuizManager documentId={id} />;
+
+  }
 
   const tabs = [
     { name: "Content", content: renderContent() },
