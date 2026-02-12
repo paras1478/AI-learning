@@ -18,7 +18,6 @@ const Sidebar = ({ isOpen }) => {
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
       `}
     >
-      {/* Logo */}
       <div className="flex items-center gap-2 mb-8">
         <div className="w-9 h-9 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold">
           AI
@@ -28,7 +27,6 @@ const Sidebar = ({ isOpen }) => {
         </h1>
       </div>
 
-      {/* Menu */}
       <nav className="space-y-2">
         {menuItems.map((item) => (
           <NavLink

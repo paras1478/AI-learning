@@ -7,7 +7,6 @@ import React, {
 
 const AuthContext = createContext(null);
 
-// Custom hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -21,7 +20,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  //  Check auth on app load
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -44,7 +42,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  //  Login
   const login = (userData, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -53,7 +50,6 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true);
   };
 
-  //  Logout
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -61,11 +57,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
 
-    // optional redirect
     window.location.href = "/";
   };
 
-  //  Update user profile locally
   const updateUser = (updatedUserData) => {
     const newUserData = { ...user, ...updatedUserData };
     localStorage.setItem("user", JSON.stringify(newUserData));

@@ -1,7 +1,6 @@
 import axiosInstance from "../utils/axiosInstance";
 import { API_PATHS } from "../utils/apiPaths";
 
-/* ================= GET DOCUMENTS ================= */
 const getDocuments = async () => {
   try {
     const response = await axiosInstance.get(
@@ -13,7 +12,6 @@ const getDocuments = async () => {
   }
 };
 
-/* ================= UPLOAD DOCUMENT ================= */
 const uploadDocument = async (formData) => {
   try {
     const response = await axiosInstance.post(
@@ -31,7 +29,6 @@ const uploadDocument = async (formData) => {
   }
 };
 
-/* ================= DELETE DOCUMENT ================= */
 const deleteDocument = async (id) => {
   try {
     const response = await axiosInstance.delete(
@@ -43,7 +40,6 @@ const deleteDocument = async (id) => {
   }
 };
 
-/* ================= GET DOCUMENT BY ID ================= */
 const getDocumentById = async (id) => {
   try {
     const response = await axiosInstance.get(

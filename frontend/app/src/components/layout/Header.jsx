@@ -13,7 +13,6 @@ const Header = ({ toggleSidebar }) => {
         relative z-50
       "
     >
-      {/* Toggle Button */}
       <button
         onClick={toggleSidebar}
         className="
@@ -25,7 +24,6 @@ const Header = ({ toggleSidebar }) => {
         <Menu size={22} className="text-black" />
       </button>
 
-      {/* Right Section */}
       <div className="flex items-center gap-4">
         <Bell className="text-slate-600" />
 

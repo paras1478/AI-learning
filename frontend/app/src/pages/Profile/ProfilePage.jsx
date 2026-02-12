@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/common/Button";
 import Spinner from "../../components/common/Spinner";
 import authService from "../../services/authService";
@@ -69,7 +68,6 @@ const ProfilePage = () => {
 
       <div className="space-y-8 mt-6">
 
-        {/* USER INFO */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">User Information</h3>
 
@@ -98,13 +96,11 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* CHANGE PASSWORD */}
         <div className="bg-white border border-neutral-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">Change Password</h3>
 
           <form onSubmit={handleChangePassword} className="space-y-4">
 
-            {/* Current Password */}
             <PasswordInput
               label="Current Password"
               value={currentPassword}
@@ -113,7 +109,6 @@ const ProfilePage = () => {
               setShow={setShowCurrent}
             />
 
-            {/* New Password */}
             <PasswordInput
               label="New Password"
               value={newPassword}
@@ -122,7 +117,6 @@ const ProfilePage = () => {
               setShow={setShowNew}
             />
 
-            {/* Confirm Password */}
             <PasswordInput
               label="Confirm New Password"
               value={confirmNewPassword}

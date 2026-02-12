@@ -3,7 +3,6 @@ import React from "react";
 const Tabs = ({ tabs, activeTab, setActiveTab }) => {
   return (
     <div className="w-full">
-      {/* ================= TAB HEADERS ================= */}
       <nav className="relative border-b border-slate-200">
         <div className="flex gap-6">
           {tabs.map((tab) => (
@@ -28,7 +27,6 @@ const Tabs = ({ tabs, activeTab, setActiveTab }) => {
         </div>
       </nav>
 
-      {/* ================= TAB CONTENT ================= */}
       <div className="pt-6">
         {tabs.map((tab) =>
           tab.name === activeTab ? (

@@ -83,12 +83,10 @@ const QuizManager = ({ documentId }) => {
   return (
     <>
       <div className="space-y-6">
-        {/* BACK BUTTON */}
         <Link to="/documents" className="flex items-center gap-1 text-sm">
           <ArrowLeft size={16} /> Back to Documents
         </Link>
 
-        {/* HEADER */}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">Quizzes</h2>
 
@@ -102,7 +100,6 @@ const QuizManager = ({ documentId }) => {
           </Button>
         </div>
 
-        {/* CONTENT */}
         {quizzes.length === 0 ? (
           <EmptyState
             title="No Quizzes Found"
@@ -125,7 +122,6 @@ const QuizManager = ({ documentId }) => {
         )}
       </div>
 
-      {/* 🔥 GENERATE QUIZ MODAL */}
       {showGenerateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
@@ -169,7 +165,6 @@ const QuizManager = ({ documentId }) => {
         </div>
       )}
 
-      {/* 🗑️ DELETE MODAL */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">

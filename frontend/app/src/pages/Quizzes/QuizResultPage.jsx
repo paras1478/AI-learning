@@ -33,7 +33,6 @@ const QuizResultPage = () => {
 
   if (loading) return <Spinner />;
 
-  // ✅ SAFE GUARD (most important)
   const detailedResults = Array.isArray(resultsData?.results)
     ? resultsData.results
     : [];
@@ -61,7 +60,6 @@ const QuizResultPage = () => {
     <div className="p-6 w-full">
       <h2 className="text-3xl font-bold mb-4">Quiz-Result</h2>
 
-      {/* SCORE CARD */}
       <div className="bg-white rounded-2xl shadow border p-6 text-center mb-6">
         <div
           className={`mx-auto w-32 h-32 rounded-full bg-gradient-to-r ${getScoreColor(
@@ -91,7 +89,6 @@ const QuizResultPage = () => {
         </div>
       </div>
 
-      {/* QUESTIONS */}
       <div className="mt-8 space-y-4">
         {detailedResults.map((item, index) => (
           <div
@@ -129,7 +126,6 @@ const QuizResultPage = () => {
         ))}
       </div>
 
-      {/* ACTIONS */}
       <div className="flex justify-between mt-6">
         <Link
           to="/documents"

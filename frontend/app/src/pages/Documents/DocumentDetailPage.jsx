@@ -35,7 +35,7 @@ const DocumentDetailPage = () => {
   if (loading) return <Spinner />;
   if (!document) return <p>Document not found</p>;
 
-const pdfUrl = `http://localhost:8000${document.filePath}`;
+const pdfUrl = document.filePath;
 
 
   const renderContent = () => (
@@ -90,7 +90,6 @@ const pdfUrl = `http://localhost:8000${document.filePath}`;
         pdfUrl={pdfUrl}
       />
 
-      {/* TAB CONTENT */}
       {activeTabContent}
     </div>
   );

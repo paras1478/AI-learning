@@ -1,7 +1,6 @@
 import axiosInstance from "../utils/axiosInstance";
 import { API_PATHS } from "../utils/apiPaths";
 
-/* ================= LOGIN ================= */
 const login = async (email, password) => {
   const res = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
     email,
@@ -11,7 +10,6 @@ const login = async (email, password) => {
 };
 
 
-/* ================= REGISTER ================= */
 const register = async (username, email, password) => {
   try {
     const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
@@ -27,7 +25,6 @@ const register = async (username, email, password) => {
   }
 };
 
-/* ================= GET PROFILE ================= */
 const getProfile = async () => {
   try {
     const response = await axiosInstance.get(
@@ -41,7 +38,6 @@ const getProfile = async () => {
   }
 };
 
-/* ================= UPDATE PROFILE ================= */
 const updateProfile = async (userData) => {
   try {
     const response = await axiosInstance.put(
@@ -56,7 +52,6 @@ const updateProfile = async (userData) => {
   }
 };
 
-/* ================= CHANGE PASSWORD ================= */
 const changePassword = async (passwords) => {
   try {
     const response = await axiosInstance.post(
@@ -71,7 +66,6 @@ const changePassword = async (passwords) => {
   }
 };
 
-/* ================= EXPORT ================= */
 const authService = {
   login,
   register,

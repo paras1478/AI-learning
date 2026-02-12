@@ -50,7 +50,7 @@ const RegisterPage = () => {
           <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
         )}
 
-        {/* Username */}
+     
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Username</label>
           <div className="flex items-center border rounded px-3 py-2">
@@ -66,7 +66,7 @@ const RegisterPage = () => {
           </div>
         </div>
 
-        {/* Email */}
+        
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Email</label>
           <div className="flex items-center border rounded px-3 py-2">
@@ -82,7 +82,6 @@ const RegisterPage = () => {
           </div>
         </div>
 
-        {/* Password */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-1">Password</label>
           <div className="flex items-center border rounded px-3 py-2">

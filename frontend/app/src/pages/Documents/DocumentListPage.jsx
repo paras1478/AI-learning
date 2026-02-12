@@ -11,18 +11,17 @@ const DocumentListPage = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Upload state
+  
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadFile, setUploadFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  // Delete state
+  
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // ================= FETCH DOCUMENTS =================
   const fetchDocuments = async () => {
     try {
       const data = await documentService.getDocuments();
@@ -38,13 +37,11 @@ const DocumentListPage = () => {
     fetchDocuments();
   }, []);
 
-  // ================= OPEN DELETE MODAL =================
   const handleDelete = (doc) => {
     setSelectedDoc(doc);
     setIsDeleteOpen(true);
   };
 
-  // ================= CONFIRM DELETE =================
   const confirmDelete = async () => {
     if (!selectedDoc) return;
 
@@ -64,7 +61,6 @@ const DocumentListPage = () => {
     }
   };
 
-  // ================= FILE CHANGE =================
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -78,7 +74,6 @@ const DocumentListPage = () => {
     setUploadTitle(file.name.replace(".pdf", ""));
   };
 
-  // ================= UPLOAD =================
   const handleUpload = async (e) => {
     e.preventDefault();
 
@@ -106,7 +101,6 @@ const DocumentListPage = () => {
     }
   };
 
-  // ================= CONTENT =================
   const renderContent = () => {
     if (loading) {
       return (
@@ -169,7 +163,6 @@ const DocumentListPage = () => {
         {renderContent()}
       </div>
 
-      {/* ================= UPLOAD MODAL ================= */}
       {isUploadOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white w-full max-w-md rounded-2xl p-6 relative shadow-xl">
@@ -235,7 +228,6 @@ const DocumentListPage = () => {
         </div>
       )}
 
-      {/* ================= DELETE MODAL ================= */}
       {isDeleteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white w-full max-w-md rounded-2xl p-6 relative shadow-xl">

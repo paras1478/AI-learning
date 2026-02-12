@@ -48,7 +48,6 @@ const submitQuiz = async (quizId, answers) => {
 
 const getQuizResults = async (quizId) => {
   const url = API_PATHS.QUIZZES.GET_QUIZ_RESULTS(quizId);
-  console.log("🔥 RESULT API URL =>", url);
 
   const response = await axiosInstance.get(url);
   return response.data;

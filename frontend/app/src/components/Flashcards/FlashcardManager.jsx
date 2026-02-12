@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Sparkles, Brain, Trash2 } from "lucide-react
 import toast from "react-hot-toast";
 import moment from "moment";
 
-import flashcardService from "../../services/flashcardService";
+import flashcardService from "@/services/flashCardService";
 import Spinner from "../common/Spinner";
 import Flashcard from "./Flashcard";
 
@@ -16,7 +16,7 @@ const FlashcardManager = ({ documentId }) => {
   const [generating, setGenerating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  /* ================= FETCH ================= */
+
   const fetchFlashcardSets = useCallback(async () => {
     try {
       setLoading(true);
@@ -29,12 +29,10 @@ const FlashcardManager = ({ documentId }) => {
     }
   }, []);
 
-  /* 🔥 IMPORTANT */
   useEffect(() => {
     fetchFlashcardSets();
   }, [fetchFlashcardSets]);
 
-  /* ================= GENERATE ================= */
   const handleGenerateFlashcards = async () => {
     setGenerating(true);
     try {
@@ -58,7 +56,6 @@ const FlashcardManager = ({ documentId }) => {
 
   return (
     <div className="bg-white border rounded-3xl p-6 space-y-6">
-      {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Your Flashcard Sets</h2>
@@ -81,11 +78,9 @@ const FlashcardManager = ({ documentId }) => {
         </button>
       </div>
 
-      {/* LIST */}
       <div className="space-y-6">
         {flashcardSets.map((set, index) => (
           <div key={set._id} className="space-y-4">
-            {/* SET CARD */}
             <div
               onClick={() => {
                 setOpenIndex(openIndex === index ? null : index);
@@ -158,7 +153,6 @@ const FlashcardManager = ({ documentId }) => {
         ))}
       </div>
 
-      {/* DELETE MODAL */}
       {deleteTarget && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md">

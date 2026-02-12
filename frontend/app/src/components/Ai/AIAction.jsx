@@ -16,7 +16,6 @@ const AIActions = () => {
   const [modalContent, setModalContent] = useState("");
   const [concept, setConcept] = useState("");
 
-  /* ===== Generate Summary ===== */
   const handleGenerateSummary = async () => {
     try {
       setLoadingAction("summary");
@@ -34,7 +33,6 @@ const AIActions = () => {
     }
   };
 
-  /* ===== Explain Concept ===== */
   const handleExplainConcept = async (e) => {
     e.preventDefault();
 
@@ -62,10 +60,8 @@ const AIActions = () => {
 
   return (
     <>
-      {/* Main Card */}
       <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl overflow-hidden">
 
-        {/* Header */}
         <div className="flex items-center gap-2 px-6 py-4 border-b bg-gradient-to-r from-emerald-500 to-teal-500 text-white">
           <Sparkles />
           <h3 className="font-semibold">AI Actions</h3>
@@ -73,7 +69,6 @@ const AIActions = () => {
 
         <div className="p-6 space-y-6">
 
-          {/* Generate Summary */}
           <div className="border rounded-xl p-4 shadow-sm bg-slate-50">
             <div className="flex items-center gap-2 mb-2">
               <BookOpen className="text-blue-600" />
@@ -92,7 +87,6 @@ const AIActions = () => {
             </button>
           </div>
 
-          {/* Explain Concept */}
           <div className="border rounded-xl p-4 shadow-sm bg-slate-50">
             <div className="flex items-center gap-2 mb-2">
               <Lightbulb className="text-yellow-500" />
@@ -121,7 +115,6 @@ const AIActions = () => {
         </div>
       </div>
 
-      {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

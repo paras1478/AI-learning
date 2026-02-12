@@ -15,7 +15,6 @@ const DocumentCard = ({ document, onDelete }) => {
                  p-5 cursor-pointer transition-all duration-300 ease-out
                  hover:-translate-y-2 hover:shadow-xl"
     >
-      {/* Delete button (stop navigation) */}
       <button
         type="button"
         onClick={(e) => {
@@ -28,7 +27,6 @@ const DocumentCard = ({ document, onDelete }) => {
         <Trash2 size={18} />
       </button>
 
-      {/* Icon */}
       <div className="w-11 h-11 rounded-xl bg-emerald-500
                       flex items-center justify-center text-white mb-4">
         <FileText size={20} />

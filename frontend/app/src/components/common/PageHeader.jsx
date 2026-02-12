@@ -6,13 +6,11 @@ const PageHeader = ({ title, subtitle, activeTab, setActiveTab, pdfUrl }) => {
 
   return (
     <div className="space-y-4">
-      {/* Title */}
       <div>
         <h1 className="text-2xl font-semibold">{title}</h1>
         <p className="text-sm text-slate-500">{subtitle}</p>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-6 border-b">
         {tabs.map((tab) => (
           <button
@@ -29,7 +27,6 @@ const PageHeader = ({ title, subtitle, activeTab, setActiveTab, pdfUrl }) => {
         ))}
       </div>
 
-      {/* Viewer header */}
       {activeTab === "Content" && (
         <div className="flex justify-between items-center bg-slate-50 p-3 rounded">
           <span className="text-sm font-medium">Document Viewer</span>

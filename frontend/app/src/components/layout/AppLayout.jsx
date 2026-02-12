@@ -11,14 +11,12 @@ const AppLayout = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  // ✅ EXACT match for results page (NO FAIL)
   const isResultPage = /\/quizzes\/[^/]+\/results\/?$/.test(
     location.pathname
   );
 
   return (
     <div className="h-screen overflow-hidden">
-      {/* ❌ Sidebar hide on results */}
       {!isResultPage && (
         <Sidebar
           isOpen={isSidebarOpen}
@@ -31,7 +29,6 @@ const AppLayout = () => {
           !isResultPage && isSidebarOpen ? "ml-64" : "ml-0"
         }`}
       >
-        {/* ❌ Header hide on results */}
         {!isResultPage && (
           <Header
             isSidebarOpen={isSidebarOpen}
@@ -39,7 +36,6 @@ const AppLayout = () => {
           />
         )}
 
-        {/* ✅ Full screen main */}
         <main
           className={`flex-1 overflow-y-auto ${
             isResultPage ? "p-0" : "p-6"

@@ -15,14 +15,14 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Stats */}
+  
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Stat title="Total Documents" value="1" icon={<FileText />} />
         <Stat title="Total Flashcards" value="10" icon={<BookOpen />} />
         <Stat title="Total Quizzes" value="1" icon={<BrainCircuit />} />
       </div>
 
-      {/* Activity */}
+      
       <div className="bg-white rounded-xl border">
         <div className="flex items-center gap-2 px-6 py-4 border-b">
           <Clock size={18} />

@@ -35,7 +35,6 @@ const QuizTakePage = () => {
 
   if (loading) return <Spinner />;
 
-  // ✅ SAFE GUARD
   if (!quiz || !Array.isArray(quiz.questions) || quiz.questions.length === 0) {
     return <div className="text-center mt-10">No quiz found</div>;
   }
@@ -56,7 +55,6 @@ const QuizTakePage = () => {
     try {
       setSubmitting(true);
 
-      // ✅ SIMPLE OLD FORMAT
       const answers = quiz.questions.map(
         (q) => selectedAnswers[q._id] ?? null
       );
@@ -77,7 +75,6 @@ const QuizTakePage = () => {
     <div className="p-6 w-full">
       <h2 className="text-3xl font-bold mb-6">Quiz</h2>
 
-      {/* Progress */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-slate-600 mb-2">
           <span>
@@ -94,7 +91,6 @@ const QuizTakePage = () => {
         </div>
       </div>
 
-      {/* Question Card */}
       <div className="bg-white rounded-2xl border shadow-md p-6">
         <h2 className="text-lg font-semibold mb-5">
           {currentQuestion.question}
@@ -137,7 +133,6 @@ const QuizTakePage = () => {
         </div>
       </div>
 
-      {/* Navigation */}
       <div className="flex justify-between mt-6">
         <Button
           disabled={currentQuestionIndex === 0}

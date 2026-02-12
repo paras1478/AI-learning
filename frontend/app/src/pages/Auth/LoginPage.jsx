@@ -18,9 +18,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  // ======================
-  // EMAIL / PASSWORD LOGIN
-  // ======================
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -37,13 +35,11 @@ const LoginPage = () => {
     }
   };
 
-  // ======================
-  // GOOGLE LOGIN (FRONTEND ONLY)
-  // ======================
+
   const handleGoogleSuccess = async (response) => {
   const idToken = response.credential;
 
-  console.log("DOT COUNT:", idToken.split(".").length); // must be 3
+  console.log("DOT COUNT:", idToken.split(".").length); 
 
   await axios.post(
     "http://localhost:8000/api/auth/google",
@@ -60,13 +56,13 @@ const LoginPage = () => {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
       >
-        {/* LOGO */}
+        
         <div className="flex justify-center mb-6">
           <BrainCircuit className="w-8 h-8 text-blue-600 mr-2" />
           <h1 className="text-2xl font-bold">AI Learning Assistant</h1>
         </div>
 
-        {/* EMAIL */}
+       
         <div className="mb-4">
           <label>Email</label>
           <div className="flex border px-3 py-2 rounded">
@@ -80,7 +76,7 @@ const LoginPage = () => {
           </div>
         </div>
 
-        {/* PASSWORD */}
+        
         <div className="mb-4">
           <label>Password</label>
           <div className="flex border px-3 py-2 rounded">
@@ -100,7 +96,7 @@ const LoginPage = () => {
           </div>
         </div>
 
-        {/* LOGIN */}
+        
         <button
           type="submit"
           disabled={loading}
@@ -109,7 +105,7 @@ const LoginPage = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {/* GOOGLE LOGIN */}
+        
         <div className="mt-4 flex justify-center">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}

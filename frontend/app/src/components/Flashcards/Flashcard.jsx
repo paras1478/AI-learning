@@ -20,12 +20,10 @@ const Flashcard = ({ flashcard, onToggleStar }) => {
         }}
         onClick={handleFlip}
       >
-        {/* FRONT (QUESTION) */}
         <div
           className="absolute inset-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-6 flex flex-col"
           style={{ backfaceVisibility: "hidden" }}
         >
-          {/* STAR */}
           <div className="flex justify-end">
             <button
               onClick={(e) => {
@@ -58,7 +56,6 @@ const Flashcard = ({ flashcard, onToggleStar }) => {
           </div>
         </div>
 
-        {/* BACK (ANSWER) */}
         <div
           className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 flex flex-col"
           style={{
