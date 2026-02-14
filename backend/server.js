@@ -32,14 +32,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   "/uploads/documents",
-  express.static(path.join(__dirname, "uploads/documents"), {
-    setHeaders: (res) => {
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "inline");
-      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    },
-  })
+  express.static(path.join(__dirname, "uploads/documents"))
 );
+
 
 
 app.get("/ping", (req, res) => {
