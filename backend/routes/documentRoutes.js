@@ -12,7 +12,6 @@ import {
 import protect from "../middleware/auth.js";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/documents" });
 
 router.post("/upload", protect, upload.single("file"), uploadDocument);
 
